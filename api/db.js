@@ -1,15 +1,31 @@
-var Sequelize = require('sequelize');
-var UserModel = require('./models/user');
+var mysql = require('mysql');
+var util = require('util');
 
-const sequelize = new Sequelize('myDB','root','30111998', {
+const pool = mysql.createPool({
+    connectionLimit: 10,
     host: 'localhost',
-    dialect: 'mysql',
+    user: 'root',
+    password: '30111998',
+    database: 'myDB'
 });
 
-const User = UserModel(sequelize, Sequelize);
+pool.getConnection((err, connection) => {
+    if (err) {
+        if (err.code === 'PROTOCOL_CONNECTION_LOST') {
+            console.error('Database connection was closed.')
+        }
+        if (err.code === 'ER_CON_COUNT_ERROR') {
+            console.error('Database has too many connections.')
+        }
+        if (err.code === 'ECONNREFUSED') {
+            console.error('Database connection was refused.')
+        }
+    }
 
-sequelize.sync().then(()=>{
-    console.log('DB and tables have been created!');
-});
+    if (connection) connection.release()
 
-module.exports = User;
+    return
+})
+
+pool.query = util.promisify(pool.query);
+module.exports = pool;

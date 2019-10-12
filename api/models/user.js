@@ -1,13 +1,6 @@
-module.exports = (sequelize, type) => {
-    return sequelize.define('users_DB', {
-        email: {
-            type: type.STRING,
-            primaryKey: true,
-            allowNull: false,
-        },
-        password: {
-            type: type.STRING,
-            allowNull: false,
-        },
-    })
-};
+var db = require('../db');
+
+(async function getUsers() {
+    const res = await db.query('SELECT email, password FROM users_dbs');
+    console.log(res);
+}());

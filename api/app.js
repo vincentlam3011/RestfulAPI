@@ -4,10 +4,7 @@ var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 var passport = require('passport');
-var mysql = require('mysql');
-var db = require('./db')
-
-console.log(db)
+var data = require('./models/user');
 require('./passport');
 
 var indexRouter = require('./routes/index');
