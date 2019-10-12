@@ -9,6 +9,33 @@ passport.use(new LocalStrategy({
     passwordField: 'password'
 },
     function (email, password, cb) {
+        try {
+            User.findOne({
+                where: {
+                    username: username,
+                },
+            }).then(user => {
+                if (user != null) {
+                    console.log("Username existed!");
+                    return cb(null, false, { message: 'Username existed' });
+                } else {
+                    User.create({ username, password }).then(user => {
+                        console.log("User created");
+                        return cb(null, user, { message: 'User created successfully!' });
+                    })
+                }
+            })
+        } catch (err) {
+            cb(err);
+        }
+    }
+));
+
+passport.use(new LocalStrategy({
+    usernameField: 'email',
+    passwordField: 'password'
+},
+    function (email, password, cb) {
         return UserModel.findOne({ email, password }).then(user => {
             if (!user) {
                 return cb(null, false, { messgae: 'Incorrect email or password!' });
