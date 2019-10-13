@@ -13,10 +13,12 @@ const getUser = async obj => {
 
 // router.post('/user/login', function (req, res, next) {
 //     passport.authenticate('local', { session: false }, (err, user, info) => {
+//         user = req.body;
 //         console.log(err);
 //         if (err || !user) {
+//             console.log(user);
 //             return res.status(400).json({
-//                 message: info ? info.message : 'Login failed',
+//                 message: 'something went wrong',
 //                 user: user
 //             });
 //         }
@@ -31,17 +33,17 @@ const getUser = async obj => {
 //     })(req, res);
 // });
 
-router.post('/user/login', function (req, res, next) {
+router.post('/login', async function (req, res, next) {
     const { email, password } = req.body;
     if (email && password) {
-        var user = getUser({ email });
+        var user = await getUser({ email });
         if (!user) {
             res.status(401).json({ msg: 'No user found', user });
         }
         if (user.password === password) {
-            var payload = { id: user.email };
-            var token = jwt.sign(payload, '1612175');
-            res.json({ user, token });
+            var payload = { email: user.email };
+            var token = jwt.sign({user: payload}, '1612175');
+            return res.json({ user, token });
         } else {
             res.status(401).json({ msg: 'Wrong password' });
         }

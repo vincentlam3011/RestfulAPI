@@ -7,8 +7,12 @@ router.get('/', function (req, res, next) {
 });
 
 /* GET user's profile */
-router.get('/me', function (req, res, next) {
-  res.send(req.user);
-});
+router.get('/me', (req, res, next) => {
+  res.json({
+    message: 'Authorized',
+    user: req.user,
+    token: req.query.secret_token
+  })
+})
 
 module.exports = router;

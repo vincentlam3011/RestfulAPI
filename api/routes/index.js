@@ -8,7 +8,7 @@ const createUser = async ({ email, password }) => {
 };
 
 /* Get a list of all users */
-const usersList = async() => {
+const usersList = async () => {
   return await User.findAll();
 };
 
