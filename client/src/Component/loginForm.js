@@ -39,26 +39,31 @@ class loginForm extends React.Component {
     }
 
     render() {
+        if (localStorage.getItem('user') !== null) {
+            window.location.replace('/game');
+        }
         const { loggingIn } = this.props;
         const { email, password, submitted } = this.state;
         const emailForm =
             <FormGroup>
-                <Label for="exampleEmail">Email</Label>
+                <Label for="exampleEmail"><b>Email</b></Label>
                 <Input
                     type="email"
                     id="email"
                     placeholder="email@domain"
-                    value={this.handleChange}
+                    value={email}
+                    onChange={this.handleChange}
                 />
             </FormGroup>
         const passwordForm =
             <FormGroup>
-                <Label for="examplePassword">Password</Label>
+                <Label for="examplePassword"><b>Password</b></Label>
                 <Input
                     type="password"
                     id="password"
                     placeholder="password placeholder"
-                    value={this.handleChange}
+                    value={password}
+                    onChange={this.handleChange}
                 />
             </FormGroup>
         const loginBtn = <Button outline color="primary" id="loginBtn">Log in</Button>
@@ -73,7 +78,15 @@ class loginForm extends React.Component {
                                 <CardTitle className="text-center"><label class="title">LOG IN</label></CardTitle>
                                 <div class="form">
                                     <div>{emailForm}</div>
+                                    {submitted && !email &&
+                                        <div className="help-block">Email is required</div>
+                                    }
+                                    <br></br>
                                     <div>{passwordForm}</div>
+                                    {submitted && !password &&
+                                        <div className="help-block">Password is required</div>
+                                    }
+                                    <br></br>
                                     <div class="wrapper">
                                         <div id="loginBtnDiv">{loginBtn}</div>
                                         <div id="registerBtnDiv" class="nextBtn">
@@ -95,7 +108,8 @@ class loginForm extends React.Component {
 // export default loginForm;
 
 function mapState(state) {
-    return state;
+    const { loggingIn } = state.authentication;
+    return { loggingIn };
 }
 
 const actionCreators = {

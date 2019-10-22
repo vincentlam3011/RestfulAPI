@@ -103,3 +103,11 @@ ol, ul {
   padding:20px 20px 20px 20px;
   border: #2980b9 2px solid; 
 }
+
+.navbar {
+  justify-content: flex-end;
+}
+
+.navbarItem {
+  display: inline-block;
+}

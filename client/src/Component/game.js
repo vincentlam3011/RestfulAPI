@@ -1,6 +1,16 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import { Button, ButtonGroup, Badge, UncontrolledAlert } from 'reactstrap';
+import {
+  Button,
+  ButtonGroup,
+  Badge,
+  UncontrolledAlert,
+  ListGroup,
+  ListGroupItem,
+  Navbar,
+  NavbarBrand,
+} from 'reactstrap';
 
 import '../index.css';
 import Board from './board';
@@ -270,6 +280,10 @@ export function gameWon(square, squares) {
 
 class Game extends React.Component {
   render() {
+    // console.log(JSON.parse(localStorage.getItem('user')).user.email);
+    if (localStorage.getItem('user') === null) {
+      window.location.replace('/user/login');
+    }
     const { history } = this.props;
     const current = history[this.props.stepNum];
     const winner = gameWon(current.latestMoveSqr, current.squares);
@@ -344,29 +358,62 @@ class Game extends React.Component {
     }
 
     return (
-      <div className="game">
-        <div className="game-board">
-          <Board
-            squares={current.squares}
-            onSqrClick={i => this.props.onSqrClick(i)}
-          />
+      <div>
+        <div>
+          <Navbar color="light" light expand="md">
+            <div class="navbar-collapse collapse w-100 order-1 order-md-0 dual-collapse2">
+              <ul class="navbar-nav mr-auto">
+                <li class="nav-item active">
+                  <NavbarBrand>
+                    <div>
+                      Welcome to Tic-tactoe
+                    </div>
+                  </NavbarBrand>
+                </li>
+
+              </ul>
+            </div>
+            <div class="mx-auto order-0">
+              <div className="navbarItem">
+                <a class="navbar-brand mx-auto">{JSON.parse(localStorage.getItem('user')).user.email}</a>
+              </div>
+            </div>
+            <div class="navbar-collapse collapse w-50 order-3 dual-collapse2">
+              <Link to="/user/login">
+                <Button color="danger">Log out</Button>
+              </Link>
+            </div>
+          </Navbar>
         </div>
-        <div className="game-info">
-          <div>{status}</div>
-          <br />
-          <div>{statusAlert}</div>
-          <div> {restartBtn}</div>
-          <br />
-          <div>
-            {' '}
-            <Button color="success" onClick={() => this.props.sort()}>
-              Sort {isAsc ? 'descending' : 'ascending'}
-            </Button>
+        <div className="game">
+          <div className="game-board">
+            <Board
+              squares={current.squares}
+              onSqrClick={i => this.props.onSqrClick(i)}
+            />
           </div>
-          <br />
-          <ButtonGroup vertical className="list">
-            {moves}
-          </ButtonGroup>
+          <div className="game-info">
+            <ListGroup>
+              <ListGroupItem>
+                <div>{status}</div>
+                <div>{statusAlert}</div>
+              </ListGroupItem>
+              <ListGroupItem>
+                <div> {restartBtn}</div>
+              </ListGroupItem>
+              <ListGroupItem>
+                <Button color="success" onClick={() => this.props.sort()}>
+                  Sort {isAsc ? 'descending' : 'ascending'}
+                </Button>
+              </ListGroupItem>
+              <ListGroupItem>
+                <ButtonGroup vertical className="list">
+                  {moves}
+                </ButtonGroup>
+              </ListGroupItem>
+            </ListGroup>
+
+          </div>
         </div>
       </div>
     );

@@ -29,9 +29,12 @@ class registerForm extends React.Component {
         //     register(this.state.user);
         // }
         this.setState({ submitted: true });
-        const user = this.state.user;
+        const { user } = this.state;
         if (user.email && user.password && user.confirmPassword) {
-            this.props.register(user);
+            if (user.password === user.confirmPassword) {
+                this.props.register(user);
+                window.location.replace('/user/login');
+            }
         }
     }
 
@@ -52,7 +55,7 @@ class registerForm extends React.Component {
 
         const emailForm =
             <FormGroup>
-                <Label for="exampleEmail">Email</Label>
+                <Label for="exampleEmail"><b>Email</b></Label>
                 <Input
                     type="email"
                     id="email"
@@ -63,7 +66,7 @@ class registerForm extends React.Component {
             </FormGroup>
         const passwordForm =
             <FormGroup>
-                <Label for="examplePassword">Password</Label>
+                <Label for="examplePassword"><b>Password</b></Label>
                 <Input
                     type="password"
                     id="password"
@@ -74,7 +77,7 @@ class registerForm extends React.Component {
             </FormGroup>
         const confirmPasswordForm =
             <FormGroup>
-                <Label for="examplePassword">Confirm password</Label>
+                <Label for="examplePassword"><b>Confirm password</b></Label>
                 <Input
                     type="password"
                     id="confirmPassword"
@@ -95,14 +98,25 @@ class registerForm extends React.Component {
                                 <CardTitle className="text-center"><label class="title">USER REGISTRATION</label></CardTitle>
                                 <div class="form">
                                     <div>{emailForm}</div>
+                                    {submitted && !user.email &&
+                                        <div className="help-block">Email is required</div>
+                                    }
+                                    <br></br>
                                     <div>{passwordForm}</div>
+                                    {submitted && !user.password &&
+                                        <div className="help-block">Password is required</div>
+                                    }
+                                    <br></br>
                                     <div>{confirmPasswordForm}</div>
+                                    {submitted && !user.password &&
+                                        <div className="help-block">Reconfirm password</div>
+                                    }
+                                    <br></br>
                                     <div class="wrapper">
                                         {/* <div id="loginBtnDiv">{loginBtn}</div> */}
-                                        <Link to='/user/login'>
-                                            <div id="registerBtnDiv" class="nextBtn">{registerBtn}</div>
-                                            {registering && 'registering'}
-                                        </Link>
+                                        {/* <Link to='/user/login'> */}
+                                        <div id="registerBtnDiv" class="nextBtn">{registerBtn}</div>
+                                        {/* </Link> */}
                                     </div>
                                 </div>
                             </CardBody>
@@ -117,7 +131,8 @@ class registerForm extends React.Component {
 // export default registerForm;
 
 function mapState(state) {
-    return state.registering;
+    const { registering } = state.registration;
+    return { registering };
 }
 
 const actionCreators = {

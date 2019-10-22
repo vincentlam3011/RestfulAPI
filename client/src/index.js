@@ -4,11 +4,16 @@ import { render } from 'react-dom';
 import { Provider } from 'react-redux';
 import { createStore, applyMiddleware } from 'redux';
 import thunk from 'redux-thunk';
-import { alertActions } from './Action/alertAction';
-import ticTacToeApp from './Reducer/gameReducer';
+import { createLogger } from 'redux-logger';
+// import rootReducer from './Reducer/index'
 import GameBoard from './Container/gameContainer';
 import { loginForm } from './Component/loginForm';
 import { registerForm } from './Component/registerForm';
+import { combineReducers } from 'redux';
+import ticTacToeApp from './Reducer/gameReducer';
+import { authentication } from './Reducer/loginReducer';
+import { registration } from './Reducer/registerReducer';
+import { alert } from './Reducer/alerts';
 import {
   BrowserRouter as Router,
   Switch,
@@ -16,12 +21,20 @@ import {
   Redirect
 } from 'react-router-dom';
 
-import { configureFakeBackend } from './Utils/BE';
 import './index.css';
 import * as serviceWorker from './serviceWorker';
-configureFakeBackend();
-const store = createStore(ticTacToeApp, applyMiddleware(thunk));
 
+const logger = createLogger();
+
+const rootReducer = combineReducers({
+  ticTacToeApp,
+  registration,
+  authentication,
+  alert
+});
+
+const store = createStore(rootReducer, applyMiddleware(thunk, logger));
+const myStore = createStore(ticTacToeApp);
 render(
   <Provider store={store}>
     <Router>
@@ -29,7 +42,9 @@ render(
         {/* <Route path="/"></Route> */}
         <Route path="/user/login" exact component={loginForm}></Route>
         <Route path="/user/register" exact component={registerForm}></Route>
-        <Route path="/game" exact component={GameBoard}></Route>
+        <Provider store={myStore}>
+          <Route path="/game" exact component={GameBoard}></Route>
+        </Provider>
         <Redirect to="/user/login"></Redirect>
       </Switch>
     </Router>

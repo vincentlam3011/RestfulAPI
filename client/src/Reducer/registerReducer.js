@@ -3,17 +3,11 @@ import { userConstants } from '../Constants/users';
 export function registration(state = {}, action) {
     switch (action.type) {
         case userConstants.REGISTER_REQUEST:
-            {
-                return {};
-            }
+            return { registering: true };
         case userConstants.REGISTER_SUCCESS:
-            {
-                return {};
-            }
+            return {};
         case userConstants.REGISTER_FAILURE:
-            {
-                return {};
-            }
+            return {};
         default:
             return state
     }
