@@ -77,3 +77,29 @@ ol, ul {
 .status-badge {
   font-size: 20px;
 }
+
+.wrapper {
+  text-align: center;
+}
+
+#loginBtnDiv, #registerBtnDiv {
+  display: inline;
+}
+
+.nextBtn {
+  margin-left: 10px;;
+}
+
+.title {
+  font-size: 24px;
+  font-weight: bold;
+}
+
+.form {
+  background:white;
+  width:500px;
+  border-radius:6px;
+  margin: 0 auto 0 auto;
+  padding:20px 20px 20px 20px;
+  border: #2980b9 2px solid; 
+}
