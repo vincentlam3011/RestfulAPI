@@ -2,11 +2,13 @@ import React from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { render } from 'react-dom';
 import { Provider } from 'react-redux';
-import { createStore } from 'redux';
-import ticTacToeApp from './Reducer/reducer';
-import GameBoard from './Container/container';
-import loginForm from './Component/loginForm';
-import registerForm from './Component/registerForm';
+import { createStore, applyMiddleware } from 'redux';
+import thunk from 'redux-thunk';
+import { alertActions } from './Action/alertAction';
+import ticTacToeApp from './Reducer/gameReducer';
+import GameBoard from './Container/gameContainer';
+import { loginForm } from './Component/loginForm';
+import { registerForm } from './Component/registerForm';
 import {
   BrowserRouter as Router,
   Switch,
@@ -14,11 +16,12 @@ import {
   Redirect
 } from 'react-router-dom';
 
-// import Game from './Component/game';
+import { configureFakeBackend } from './Utils/BE';
 import './index.css';
 import * as serviceWorker from './serviceWorker';
+configureFakeBackend();
+const store = createStore(ticTacToeApp, applyMiddleware(thunk));
 
-const store = createStore(ticTacToeApp);
 render(
   <Provider store={store}>
     <Router>
