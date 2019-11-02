@@ -129,11 +129,11 @@ class PersonalInfo extends React.Component {
         const saveBtn = <Button color="primary" id="saveBtn">Save changes</Button>
         const cancelBtn = <Button color="warning" id="cancelBtn">Cancel</Button>
         return (
-            <div>
+            <div class="container">
                 <div>
                     <Nav pills >
                         <NavItem>
-                            <NavLink disabled active><a class="nav-item">Hello <b>{JSON.parse(localStorage.getItem('user')).user.username}</b>, welcome to Tic-tac-toe!</a></NavLink>
+                            <NavLink href="/game" active><a class="nav-item">Hello <b>{JSON.parse(localStorage.getItem('user')).user.username}</b>, welcome to Tic-tac-toe!</a></NavLink>
                         </NavItem>
                         <NavItem>
                             <NavLink href="/user/me"><a class="nav-item">Profile</a></NavLink>

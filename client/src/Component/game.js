@@ -280,6 +280,20 @@ export function gameWon(square, squares) {
 }
 
 class Game extends React.Component {
+  componentWillUpdate(clicked) {
+    console.log("                   ", clicked);
+    var max = boardSize * boardSize - 1;
+    var min = 0;
+    const history = clicked.history;
+    const current = history[clicked.stepNum];
+    if (clicked.isXNext === false) {
+      var random = Math.floor(Math.random() * (max - min + 1)) + min;
+      while (current.squares[random] !== null) {
+        random = Math.floor(Math.random() * (max - min + 1)) + min;
+      }
+      this.props.onSqrClick(random);
+    }
+  }
   render() {
     // console.log(JSON.parse(localStorage.getItem('user')).user.email);
     if (localStorage.getItem('user') === null) {
@@ -299,6 +313,7 @@ class Game extends React.Component {
       return (
         <Button
           key={move}
+          class="btn btn-primary btn-lg btn-block"
           className={
             move === this.props.stepNum ? 'move-list-item-selected' : ''
           }
@@ -330,18 +345,20 @@ class Game extends React.Component {
       if (winner) {
         status = (
           <Badge className="status-badge" color="primary">
-            Winner: {winner}
+            Winner: {winner === 'X' ? JSON.parse(localStorage.getItem('user')).user.username : 'BOT'}
           </Badge>
         );
         statusAlert = (
           <UncontrolledAlert color="success">
-            The winner is player {winner}!
+            The winner is {winner === 'X' ? JSON.parse(localStorage.getItem('user')).user.username : 'BOT'}!
           </UncontrolledAlert>
         );
       } else {
         status = (
           <Badge className="status-badge" color="primary">
-            Next player: {this.props.isXNext ? 'X' : 'O'}
+            {/* Next player: {this.props.isXNext ? 'X' : 'O'} */}
+            Next player: {this.props.isXNext ? JSON.parse(localStorage.getItem('user')).user.username : 'BOT'}
+
           </Badge>
         );
       }
@@ -359,11 +376,11 @@ class Game extends React.Component {
     }
 
     return (
-      <div>
-        <div>
+      <div class="container">
+        <div class="nav-border">
           <Nav pills >
             <NavItem>
-              <NavLink disabled active>Hello <b>{JSON.parse(localStorage.getItem('user')).user.username}</b>, welcome to Tic-tac-toe!</NavLink>
+              <NavLink href="/game" active>Hello <b>{JSON.parse(localStorage.getItem('user')).user.username}</b>, welcome to Tic-tac-toe!</NavLink>
             </NavItem>
             <NavItem>
               <NavLink href="/user/me">Profile</NavLink>
@@ -385,26 +402,23 @@ class Game extends React.Component {
             />
           </div>
           <div className="game-info">
-            <ListGroup>
-              <ListGroupItem>
-                <div>{status}</div>
-                <div>{statusAlert}</div>
-              </ListGroupItem>
-              <ListGroupItem>
-                <div> {restartBtn}</div>
-              </ListGroupItem>
-              <ListGroupItem>
+            <div>
+              <div class="vertical-list">{status}</div>
+              <div class="vertical-list">{statusAlert}</div>
+              <div class="vertical-list"> {restartBtn}</div>
+              <div class="vertical-list">
                 <Button color="success" onClick={() => this.props.sort()}>
                   Sort {isAsc ? 'descending' : 'ascending'}
                 </Button>
-              </ListGroupItem>
-              <ListGroupItem>
-                <ButtonGroup vertical className="list">
-                  {moves}
-                </ButtonGroup>
-              </ListGroupItem>
-            </ListGroup>
-
+              </div>
+            </div>
+            <div class="scroll">
+              <table class="table">
+                <tr>
+                  <td>{moves}</td>
+                </tr>
+              </table>
+            </div>
           </div>
         </div>
       </div>

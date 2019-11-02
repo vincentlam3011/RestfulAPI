@@ -100,11 +100,11 @@ class registerForm extends React.Component {
             </FormGroup>
 
         return (
-            <div>
+            <div class="container">
                 <div>
                     <Nav pills >
                         <NavItem>
-                            <NavLink disabled active><a class="nav-item">Hello, welcome to Tic-tac-toe!</a></NavLink>
+                            <NavLink href="/game" active><a class="nav-item">Hello, welcome to Tic-tac-toe!</a></NavLink>
                         </NavItem>
                         <NavItem>
                             <NavLink href="/user/me"><a class="nav-item">Profile</a></NavLink>
