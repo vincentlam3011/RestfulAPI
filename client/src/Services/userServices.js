@@ -3,6 +3,7 @@ export const userService = {
     logout,
     register,
     getAll,
+    edit,
 };
 
 const apiUrl = 'http://localhost:8080'
@@ -27,18 +28,17 @@ function logout() {
 }
 
 function getAll() {
-    let user = localStorage.getItem('user');
     let param;
-    if (user && user.token) {
-        param = { secret_token: user.token };
-    } else {
-        param = {};
-    }
+    let user = localStorage.getItem('user');
+    param = JSON.parse(user).token;
     const requestOptions = {
         method: 'GET',
         params: param
     }
-    return fetch(`${apiUrl}/me`, requestOptions).then(handleResponse);
+    return fetch(`${apiUrl}/user/me?secret_token=${param}`, requestOptions).then(handleResponse).then(user => {
+        localStorage.setItem('user', JSON.stringify(user));
+        return user;
+    });
 }
 
 function register(user) {
@@ -49,6 +49,20 @@ function register(user) {
     };
 
     return fetch(`${apiUrl}/user/register`, requestOptions).then(handleResponse);
+}
+
+function edit(email, username, password) {
+    const requestOptions = {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, username, password })
+    };
+    console.log(requestOptions.body)
+    return fetch(`${apiUrl}/user/edit`, requestOptions).then(handleResponse).then(user => {
+        localStorage.removeItem('user');
+        localStorage.setItem('user', JSON.stringify(user));
+        return user;
+    });
 }
 
 function handleResponse(res) {

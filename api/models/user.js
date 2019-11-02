@@ -6,6 +6,12 @@ module.exports = function (sqlize, DataTypes) {
         },
         password: {
             type: DataTypes.STRING
+        },
+        username: {
+            type: DataTypes.STRING
+        },
+        avatarUrl: {
+            type: DataTypes.STRING
         }
     })
     return User;

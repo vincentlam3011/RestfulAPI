@@ -1,8 +1,8 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+// import { Link } from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import '../index.css';
-import { FormGroup, Label, Input, Card, CardTitle, Button, CardBody, CardHeader } from 'reactstrap';
+import { FormGroup, Label, Input, Card, CardTitle, Button, CardBody, CardHeader, Nav, NavLink, NavItem } from 'reactstrap';
 // import { register } from '../Utils/JWTAuth';
 import { connect } from 'react-redux';
 import { userActions } from '../Action/userAction';
@@ -25,9 +25,6 @@ class registerForm extends React.Component {
 
     handleSubmit(e) {
         e.preventDefault();
-        // if (this.state.user.password === this.state.user.confirmPassword) {
-        //     register(this.state.user);
-        // }
         this.setState({ submitted: true });
         const { user } = this.state;
         if (user.email && user.password && user.confirmPassword) {
@@ -89,8 +86,37 @@ class registerForm extends React.Component {
         // const loginBtn = <Button outline color="primary" id="loginBtn">Log in</Button>
         const registerBtn = <Button outline color="primary" id="registerBtn">Sign me up</Button>
 
+        const usernameForm =
+            <FormGroup>
+                <Label for="exampleEmail"><b>Username</b></Label>
+                <Input
+                    type="text"
+                    // required
+                    id="username"
+                    placeholder="Your display name"
+                    onChange={this.handleChange}
+                    value={user.username}
+                />
+            </FormGroup>
+
         return (
             <div>
+                <div>
+                    <Nav pills >
+                        <NavItem>
+                            <NavLink disabled active><a class="nav-item">Hello, welcome to Tic-tac-toe!</a></NavLink>
+                        </NavItem>
+                        <NavItem>
+                            <NavLink href="/user/me"><a class="nav-item">Profile</a></NavLink>
+                        </NavItem>
+                        <NavItem>
+                            <NavLink href="/user/register"><a class="nav-item">Register</a></NavLink>
+                        </NavItem>
+                        <NavItem>
+                            <NavLink href="/user/login"><a class="nav-item">Logout</a></NavLink>
+                        </NavItem>
+                    </Nav>
+                </div>
                 <form name="form" onSubmit={this.handleSubmit}>
                     <Card>
                         <CardHeader>
@@ -99,17 +125,22 @@ class registerForm extends React.Component {
                                 <div class="form">
                                     <div>{emailForm}</div>
                                     {submitted && !user.email &&
-                                        <div className="help-block">Email is required</div>
+                                        <div className="help-block" class="notification-danger-text">Email is required</div>
+                                    }
+                                    <br></br>
+                                    <div>{usernameForm}</div>
+                                    {submitted && !user.username &&
+                                        <div className="help-block" class="notification-danger-text">Username is required</div>
                                     }
                                     <br></br>
                                     <div>{passwordForm}</div>
                                     {submitted && !user.password &&
-                                        <div className="help-block">Password is required</div>
+                                        <div className="help-block" class="notification-danger-text">Password is required</div>
                                     }
                                     <br></br>
                                     <div>{confirmPasswordForm}</div>
                                     {submitted && !user.password &&
-                                        <div className="help-block">Reconfirm password</div>
+                                        <div className="help-block" class="notification-danger-text">Reconfirm password</div>
                                     }
                                     <br></br>
                                     <div class="wrapper">

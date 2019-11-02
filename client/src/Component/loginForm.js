@@ -2,7 +2,7 @@ import React from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import '../index.css';
 import { connect } from 'react-redux';
-import { FormGroup, Label, Input, Card, CardTitle, Button, CardBody, CardHeader } from 'reactstrap';
+import { FormGroup, Label, Input, Card, CardTitle, Button, CardBody, CardHeader, Nav, NavLink, NavItem } from 'reactstrap';
 import { Link } from 'react-router-dom';
 import { userActions } from '../Action/userAction';
 
@@ -34,7 +34,8 @@ class loginForm extends React.Component {
         this.setState({ submitted: true });
         const { email, password } = this.state;
         if (email && password) {
-            this.props.login(email, password);
+            const noti = this.props.login(email, password);
+            // alert(JSON.parse(noti))
         }
     }
 
@@ -71,6 +72,22 @@ class loginForm extends React.Component {
 
         return (
             <div>
+                <div>
+                    <Nav pills >
+                        <NavItem>
+                            <NavLink disabled active><a class="nav-item">Hello, welcome to Tic-tac-toe!</a></NavLink>
+                        </NavItem>
+                        <NavItem>
+                            <NavLink href="/user/me"><a class="nav-item">Profile</a></NavLink>
+                        </NavItem>
+                        <NavItem>
+                            <NavLink href="/user/register"><a class="nav-item">Register</a></NavLink>
+                        </NavItem>
+                        <NavItem>
+                            <NavLink href="/user/login"><a class="nav-item">Logout</a></NavLink>
+                        </NavItem>
+                    </Nav>
+                </div>
                 <form name="form" onSubmit={this.handleSubmit}>
                     <Card>
                         <CardHeader>

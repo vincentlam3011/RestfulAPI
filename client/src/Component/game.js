@@ -8,8 +8,9 @@ import {
   UncontrolledAlert,
   ListGroup,
   ListGroupItem,
-  Navbar,
-  NavbarBrand,
+  Nav,
+  NavItem,
+  NavLink,
 } from 'reactstrap';
 
 import '../index.css';
@@ -288,7 +289,7 @@ class Game extends React.Component {
     const current = history[this.props.stepNum];
     const winner = gameWon(current.latestMoveSqr, current.squares);
     const { isAsc } = this.props;
-
+    const { isXNext } = this.props;
     const moves = history.map((step, move) => {
       const row = Math.floor(step.latestMoveSqr / boardSize);
       const col = step.latestMoveSqr - row;
@@ -360,31 +361,22 @@ class Game extends React.Component {
     return (
       <div>
         <div>
-          <Navbar color="light" light expand="md">
-            <div class="navbar-collapse collapse w-100 order-1 order-md-0 dual-collapse2">
-              <ul class="navbar-nav mr-auto">
-                <li class="nav-item active">
-                  <NavbarBrand>
-                    <div>
-                      Welcome to Tic-tactoe
-                    </div>
-                  </NavbarBrand>
-                </li>
-
-              </ul>
-            </div>
-            <div class="mx-auto order-0">
-              <div className="navbarItem">
-                <a class="navbar-brand mx-auto">{JSON.parse(localStorage.getItem('user')).user.email}</a>
-              </div>
-            </div>
-            <div class="navbar-collapse collapse w-50 order-3 dual-collapse2">
-              <Link to="/user/login">
-                <Button color="danger">Log out</Button>
-              </Link>
-            </div>
-          </Navbar>
+          <Nav pills >
+            <NavItem>
+              <NavLink disabled active>Hello <b>{JSON.parse(localStorage.getItem('user')).user.username}</b>, welcome to Tic-tac-toe!</NavLink>
+            </NavItem>
+            <NavItem>
+              <NavLink href="/user/me">Profile</NavLink>
+            </NavItem>
+            <NavItem>
+              <NavLink href="/user/register">Register</NavLink>
+            </NavItem>
+            <NavItem>
+              <NavLink href="/user/login">Logout</NavLink>
+            </NavItem>
+          </Nav>
         </div>
+        <br />
         <div className="game">
           <div className="game-board">
             <Board

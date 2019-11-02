@@ -1,12 +1,14 @@
 import { userConstants } from '../Constants/users';
 import { userService } from '../Services/userServices';
 import { alertActions } from './alertAction';
+import { request } from 'https';
 
 export const userActions = {
     login,
     logout,
     register,
-    getAll
+    getAll,
+    edit
 }
 
 function login(email, password) {
@@ -15,7 +17,7 @@ function login(email, password) {
 
         userService.login(email, password)
             .then(
-                user => { 
+                user => {
                     dispatch(success(user));
                 },
                 error => {
@@ -41,7 +43,7 @@ function register(user) {
 
         userService.register(user)
             .then(
-                user => { 
+                user => {
                     dispatch(success());
                     dispatch(alertActions.success('Registration successful'));
                 },
@@ -55,6 +57,25 @@ function register(user) {
     function request(user) { return { type: userConstants.REGISTER_REQUEST, user } }
     function success(user) { return { type: userConstants.REGISTER_SUCCESS, user } }
     function failure(error) { return { type: userConstants.REGISTER_FAILURE, error } }
+}
+
+function edit(email, username, password) {
+    return dispatch => {
+        dispatch(request(email, username, password));
+
+        userService.edit(email, username, password)
+            .then(user => {
+                dispatch(success(user));
+                dispatch(alertActions.success('Edit successful'));
+            },
+                error => {
+                    dispatch(failure(error.toString()));
+                    dispatch(alertActions.error(error.toString()));
+                });
+    };
+    function request(user) { return { type: userConstants.EDIT_REQUEST, user } }
+    function success(user) { return { type: userConstants.EDIT_SUCCESS, user } }
+    function failure(error) { return { type: userConstants.EDIT_FAILURE, error } }
 }
 
 function getAll() {

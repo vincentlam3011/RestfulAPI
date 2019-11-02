@@ -8,11 +8,12 @@ const ExtractJWT = passportJWT.ExtractJwt;
 //----------------------------------------------------------------------------------------
 passport.use('signup', new LocalStrategy({
     usernameField: 'email',
-    passwordField: 'password'
-}, async (email, password, done) => {
+    passwordField: 'password',
+    displayNameField: 'username',
+}, async (email, password, username, done) => {
     try {
         //Save the information provided by the user to the the database
-        const user = await UserModel.create({ email, password });
+        const user = await UserModel.create({ email, password, username });
         //Send the user information to the next middleware
         return done(null, user);
     } catch (error) {
@@ -70,32 +71,3 @@ passport.use(new JWTStrategy({
         done(error);
     }
 }));
-
-//-----------------------------------------------------------------------------------
-// passport.use(new LocalStrategy({
-//     email: 'email',
-//     password: 'password'
-// },
-//     function (email, password, cb) {
-//         return UserModel.findOne({ email, password }).then(user => {
-//             if (!user) {
-//                 return cb(null, false, { messgae: 'Incorrect email or password!' });
-//             }
-//             return cb(null, user, { message: 'Logged in successfully' });
-//         }).catch(err => cb(err));
-//     }
-// ));
-
-// passport.use(new JWTStrategy({
-//     jwtFromRequest: ExtractJWT.fromAuthHeaderAsBearerToken(),
-//     secretOrKey: '1612175'
-// },
-//     function (jwtPayload, cb) {
-//         console.log(jwtPayload);
-//         return UserModel.findOneById(jwtPayload.email).then(user => {
-//             return cb(null, user);
-//         }).catch(err => {
-//             return cb(err);
-//         });
-//     }
-// ));

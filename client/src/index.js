@@ -9,10 +9,12 @@ import { createLogger } from 'redux-logger';
 import GameBoard from './Container/gameContainer';
 import { loginForm } from './Component/loginForm';
 import { registerForm } from './Component/registerForm';
+import { personalInfo } from './Component/PersonalInfo';
 import { combineReducers } from 'redux';
 import ticTacToeApp from './Reducer/gameReducer';
 import { authentication } from './Reducer/loginReducer';
 import { registration } from './Reducer/registerReducer';
+import { personalization } from './Reducer/editReducer'
 import { alert } from './Reducer/alerts';
 import {
   BrowserRouter as Router,
@@ -30,7 +32,8 @@ const rootReducer = combineReducers({
   ticTacToeApp,
   registration,
   authentication,
-  alert
+  alert,
+  personalization
 });
 
 const store = createStore(rootReducer, applyMiddleware(thunk, logger));
@@ -39,13 +42,13 @@ render(
   <Provider store={store}>
     <Router>
       <Switch>
-        {/* <Route path="/"></Route> */}
+        <Redirect from="/" to="/user/login" exact component={loginForm}></Redirect>
         <Route path="/user/login" exact component={loginForm}></Route>
         <Route path="/user/register" exact component={registerForm}></Route>
+        <Route path="/user/me" exact component={personalInfo}></Route>
         <Provider store={myStore}>
           <Route path="/game" exact component={GameBoard}></Route>
         </Provider>
-        <Redirect to="/user/login"></Redirect>
       </Switch>
     </Router>
   </Provider>,
