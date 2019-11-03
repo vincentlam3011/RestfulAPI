@@ -59,7 +59,7 @@ router.put('/user/edit', async function (req, res, next) {
   const { email, username, password } = req.body;
   console.log(req.body);
   var user = await getUser({ email });
-  const newData = { email: email, username: username, password: password, avatar: user.avatarUrl };
+  var newData = { email: email, username: username, password: password, avatar: user.avatarUrl };
   var token = jwt.sign({ user: newData }, '1612175');
   User.update(newData, { where: { email: req.body.email } }).then(updated => res.json({
     updated, msg: 'Data updated'

@@ -7,11 +7,22 @@ import { connect } from 'react-redux';
 import { userActions } from '../Action/userAction';
 
 class PersonalInfo extends React.Component {
+    componentDidUpdate() {
+        var param = JSON.parse(localStorage.getItem('user')).token;
+        this.props.getUser(param);
+        console.log("Current local:  ", JSON.parse(localStorage.getItem('user')));
+        // window.location.reload();
+    }
+    componentDidMount() {
+        var param = JSON.parse(localStorage.getItem('user')).token;
+        this.props.getUser(param);
+    }
     constructor(props) {
         if (localStorage.getItem('user') === null) {
             window.location.replace('/user/login');
         }
         console.log(JSON.parse(localStorage.getItem('user')).user)
+
         super(props);
         this.state = {
             user: {
@@ -45,14 +56,18 @@ class PersonalInfo extends React.Component {
             }
         }
         var proceed = true;
-        if (newPassword) {
-            proceed = !oldPassword && oldPassword === JSON.parse(localStorage.getItem('user')).user.password && !confirmPassword && confirmPassword === newPassword;
+        if (newPassword !== null) {
+            proceed = oldPassword !== null && oldPassword === JSON.parse(localStorage.getItem('user')).user.password && confirmPassword !== null && confirmPassword === newPassword;
+            console.log(oldPassword !== null);
+            console.log(oldPassword === JSON.parse(localStorage.getItem('user')).user.password);
+            console.log(confirmPassword === newPassword);
         }
         console.log("Proceed:    ", proceed);
         console.log(email, username, password);
         if (proceed) {
             this.props.edit(email, username, password);
-            window.location.replace('/user/login');
+            console.log(localStorage.getItem('user'));
+            setTimeout(() => { window.location.reload(); }, 1000);
         }
     }
 
@@ -70,7 +85,8 @@ class PersonalInfo extends React.Component {
 
     render() {
         const editting = this.props;
-        const { user, submitted, changed } = this.state;
+
+        const { user, submitted, } = this.state;
         const email = JSON.parse(localStorage.getItem('user')).user.email;
         const curPsw = JSON.parse(localStorage.getItem('user')).user.password;
 
@@ -129,8 +145,8 @@ class PersonalInfo extends React.Component {
         const saveBtn = <Button color="primary" id="saveBtn">Save changes</Button>
         const cancelBtn = <Button color="warning" id="cancelBtn">Cancel</Button>
         return (
-            <div class="container">
-                <div>
+            <div >
+                <div class="container">
                     <Nav pills >
                         <NavItem>
                             <NavLink href="/game" active><a class="nav-item">Hello <b>{JSON.parse(localStorage.getItem('user')).user.username}</b>, welcome to Tic-tac-toe!</a></NavLink>
@@ -159,12 +175,12 @@ class PersonalInfo extends React.Component {
                                         <Label><b>Change password</b></Label>
                                     </div>
                                     <div>{oldPswBox}</div>
-                                    {submitted && user.oldPassword !== JSON.parse(localStorage.getItem('user')).user.password && user.newPassword &&
+                                    {submitted && user.oldPassword !== JSON.parse(localStorage.getItem('user')).user.password && user.newPassword !== null &&
                                         <div className="help-block" class="notification-danger-text">Password does not match</div>}
-                                    {submitted && !user.oldPassword && user.newPassword && <div className="help-block" class="notification-danger-text">Please input your old password</div>} <br />
+                                    {submitted && user.oldPassword === null && user.newPassword !== null && <div className="help-block" class="notification-danger-text">Please input your old password</div>} <br />
                                     <div>{newPswBox}</div>
                                     <div>{confPswBox}</div>
-                                    {submitted && !user.confirmPassword && user.newPassword && <div className="help-block" class="notification-danger-text">Please confrim your new password</div>}
+                                    {submitted && user.confirmPassword === null && user.newPassword !== null && <div className="help-block" class="notification-danger-text">Please confrim your new password</div>}
                                     {submitted && user.newPassword && user.confirmPassword && user.newPassword !== user.confirmPassword &&
                                         <div className="help-block" class="notification-danger-text">Password does not match</div>} <br />
                                     <div class="center"><Badge color="danger">You will have to re-login after finished editting</Badge></div> <br />

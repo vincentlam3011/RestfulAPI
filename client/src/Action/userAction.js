@@ -74,15 +74,26 @@ function edit(email, username, password) {
                 });
     };
     function request(user) { return { type: userConstants.EDIT_REQUEST, user } }
-    function success(user) { return { type: userConstants.EDIT_SUCCESS, user } }
+    function success(user) {
+        var user = JSON.stringify(user);
+        user = JSON.parse(user).user;
+        user = JSON.stringify(user);
+        user = { user: user};
+        var token = JSON.parse(localStorage.getItem('user')).token;
+        var payload = { user, token };
+        console.log(payload);
+        localStorage.setItem('user', JSON.stringify(payload));
+        console.log("Local after edit success             ", JSON.parse(localStorage.getItem('user')));
+        return { type: userConstants.EDIT_SUCCESS, user };
+    }
     function failure(error) { return { type: userConstants.EDIT_FAILURE, error } }
 }
 
-function getAll() {
+function getAll(param) {
     return dispatch => {
-        dispatch(request());
+        dispatch(request(param));
 
-        userService.getAll()
+        userService.getAll(param)
             .then(
                 users => dispatch(success(users)),
                 error => dispatch(failure(error.toString()))
@@ -90,7 +101,18 @@ function getAll() {
     };
 
     function request() { return { type: userConstants.GETALL_REQUEST } }
-    function success(users) { return { type: userConstants.GETALL_SUCCESS, users } }
+    function success(users) {
+        // console.log("The user is:   ", users );
+        var user = JSON.stringify(users);
+        // console.log(param);
+        user = JSON.parse(user).user;
+        var payload = { user: user, token: param };
+        // console.log(payload);
+        localStorage.removeItem('user');
+        localStorage.setItem('user', JSON.stringify(payload));
+        console.log("The local user is now:      ", JSON.parse(localStorage.getItem('user')));
+        return { type: userConstants.GETALL_SUCCESS, users };
+    }
     function failure(error) { return { type: userConstants.GETALL_FAILURE, error } }
 }
 

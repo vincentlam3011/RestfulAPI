@@ -34,8 +34,7 @@ class loginForm extends React.Component {
         this.setState({ submitted: true });
         const { email, password } = this.state;
         if (email && password) {
-            const noti = this.props.login(email, password);
-            // alert(JSON.parse(noti))
+            this.props.login(email, password);
         }
     }
 

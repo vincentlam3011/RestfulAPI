@@ -27,14 +27,15 @@ function logout() {
     localStorage.removeItem('user');
 }
 
-function getAll() {
-    let param;
-    let user = localStorage.getItem('user');
-    param = JSON.parse(user).token;
+function getAll(param) {
+    // let param;
+    // let user = localStorage.getItem('user');
+    // param = JSON.parse(user).token;
     const requestOptions = {
         method: 'GET',
         params: param
     }
+    console.log(param);
     return fetch(`${apiUrl}/user/me?secret_token=${param}`, requestOptions).then(handleResponse).then(user => {
         localStorage.setItem('user', JSON.stringify(user));
         return user;
