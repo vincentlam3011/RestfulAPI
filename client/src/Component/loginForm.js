@@ -70,8 +70,8 @@ class loginForm extends React.Component {
         const registerBtn = <Button outline color="primary" id="registerBtn">Sign up</Button>
 
         return (
-            <div class="container">
-                <div>
+            <div>
+                <div class="container">
                     <Nav pills >
                         <NavItem>
                             <NavLink href="/game" active><a class="nav-item">Hello, welcome to Tic-tac-toe!</a></NavLink>

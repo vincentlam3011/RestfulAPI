@@ -1,7 +1,6 @@
 import { userConstants } from '../Constants/users';
 import { userService } from '../Services/userServices';
 import { alertActions } from './alertAction';
-import { request } from 'https';
 
 export const userActions = {
     login,
@@ -29,7 +28,7 @@ function login(email, password) {
 
     function request(user) { return { type: userConstants.LOGIN_REQUEST, user } }
     function success(user) { return { type: userConstants.LOGIN_SUCCESS, user } }
-    function failure(error) { return { type: userConstants.LOGIN_FAILURE, error } }
+    function failure(error) { alert("Log in failed"); return { type: userConstants.LOGIN_FAILURE, error } }
 }
 
 function logout() {
@@ -55,15 +54,15 @@ function register(user) {
     };
 
     function request(user) { return { type: userConstants.REGISTER_REQUEST, user } }
-    function success(user) { return { type: userConstants.REGISTER_SUCCESS, user } }
-    function failure(error) { return { type: userConstants.REGISTER_FAILURE, error } }
+    function success(user) { window.location.replace('/user/login'); return { type: userConstants.REGISTER_SUCCESS, user } }
+    function failure(error) { alert("Account existed"); return { type: userConstants.REGISTER_FAILURE, error } }
 }
 
-function edit(email, username, password, avatar) {
+function edit(email, username, password, avatarUrl, token) {
     return dispatch => {
-        dispatch(request(email, username, password, avatar));
+        dispatch(request(email, username, password, avatarUrl, token));
 
-        userService.edit(email, username, password, avatar)
+        userService.edit(email, username, password, avatarUrl, token)
             .then(user => {
                 dispatch(success(user));
                 dispatch(alertActions.success('Edit successful'));
@@ -75,13 +74,12 @@ function edit(email, username, password, avatar) {
     };
     function request(user) { return { type: userConstants.EDIT_REQUEST, user } }
     function success(user) {
-        var user = JSON.stringify(user);
-        user = JSON.parse(user).user;
+        console.log("From edit:     ", user);
         user = JSON.stringify(user);
-        user = { user: user};
         var token = JSON.parse(localStorage.getItem('user')).token;
+        user = JSON.parse(user).user;
         var payload = { user, token };
-        console.log(payload);
+        console.log("Payload: ", payload);
         localStorage.setItem('user', JSON.stringify(payload));
         console.log("Local after edit success             ", JSON.parse(localStorage.getItem('user')));
         return { type: userConstants.EDIT_SUCCESS, user };
@@ -102,12 +100,10 @@ function getAll(param) {
 
     function request() { return { type: userConstants.GETALL_REQUEST } }
     function success(users) {
-        // console.log("The user is:   ", users );
         var user = JSON.stringify(users);
-        // console.log(param);
         user = JSON.parse(user).user;
+        console.log("From success: ", user);
         var payload = { user: user, token: param };
-        // console.log(payload);
         localStorage.removeItem('user');
         localStorage.setItem('user', JSON.stringify(payload));
         console.log("The local user is now:      ", JSON.parse(localStorage.getItem('user')));

@@ -30,7 +30,8 @@ class registerForm extends React.Component {
         if (user.email && user.password && user.confirmPassword) {
             if (user.password === user.confirmPassword) {
                 this.props.register(user);
-                window.location.replace('/user/login');
+                // window.location.replace('/user/login');
+                window.location.reload();
             }
         }
     }
@@ -100,8 +101,8 @@ class registerForm extends React.Component {
             </FormGroup>
 
         return (
-            <div class="container">
-                <div>
+            <div>
+                <div class="container">
                     <Nav pills >
                         <NavItem>
                             <NavLink href="/game" active><a class="nav-item">Hello, welcome to Tic-tac-toe!</a></NavLink>
@@ -141,6 +142,9 @@ class registerForm extends React.Component {
                                     <div>{confirmPasswordForm}</div>
                                     {submitted && !user.password &&
                                         <div className="help-block" class="notification-danger-text">Reconfirm password</div>
+                                    }
+                                    {submitted && user.password !== user.confirmPassword &&
+                                        <div className="help-block" class="notification-danger-text">Password does not match</div>
                                     }
                                     <br></br>
                                     <div class="wrapper">

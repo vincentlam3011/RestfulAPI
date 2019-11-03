@@ -5,38 +5,49 @@ import { Link } from 'react-router-dom';
 import { FormGroup, Label, Input, Card, CardTitle, Button, CardBody, CardHeader, Badge, Nav, NavItem, NavLink } from 'reactstrap';
 import { connect } from 'react-redux';
 import { userActions } from '../Action/userAction';
+import { storage } from '../Firebase/index';
+import { isUndefined } from 'util';
 // import * as $ from 'jquery';
 
 var $ = require('jquery');
 
 class PersonalInfo extends React.Component {
-    componentDidUpdate() {
-        var param = JSON.parse(localStorage.getItem('user')).token;
-        this.props.getUser(param);
-        console.log("Current local:  ", JSON.parse(localStorage.getItem('user')));
-        // window.location.reload();
-    }
     componentDidMount() {
         var param = JSON.parse(localStorage.getItem('user')).token;
         this.props.getUser(param);
+        console.log("Cur props: ", param);
+        console.log("Current:  ", JSON.parse(localStorage.getItem('user')));
     }
+    // componentDidUpdate() {
+    //     console.log("Next: ", JSON.parse(localStorage.getItem('user')));
+    //     console.log("Next state: ", this.state);
+    // }
     constructor(props) {
-        if (localStorage.getItem('user') === '') {
+        if (localStorage.getItem('user') === null) {
             window.location.replace('/user/login');
         }
-        console.log(JSON.parse(localStorage.getItem('user')).user)
+        console.log("Current local: ", JSON.parse(localStorage.getItem('user')))
+        console.log(JSON.parse(localStorage.getItem('user')).user.avatarUrl)
 
         super(props);
+        var avatarUrl = null;
+        if (isUndefined(JSON.parse(localStorage.getItem('user')).user.avatarUrl)) {
+            avatarUrl = JSON.parse(localStorage.getItem('user')).user.avatar;
+        }
+        else {
+            avatarUrl = JSON.parse(localStorage.getItem('user')).user.avatarUrl;
+        }
         this.state = {
             user: {
                 username: JSON.parse(localStorage.getItem('user')).user.username,
-                oldPassword: '',
-                newPassword: '',
-                confirmPassword: '',
-                previewImg: (JSON.parse(localStorage.getItem('user')).user.avatarUrl) ? JSON.parse(localStorage.getItem('user')).user.avatarUrl : '../logo192.png',
+                oldPassword: null,
+                newPassword: null,
+                confirmPassword: null,
+                // previewImg: (JSON.parse(localStorage.getItem('user')).user.avatarUrl) !== null ? JSON.parse(localStorage.getItem('user')).user.avatarUrl : 'https://miro.medium.com/max/300/0*WK_vAxJo4O7Kdq3j.png',
+                previewImg: avatarUrl ? avatarUrl : 'https://miro.medium.com/max/300/0*WK_vAxJo4O7Kdq3j.png',
             },
-            changed: false,
             submitted: false,
+            selectedFile: null,
         }
         this.handleChange = this.handleChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
@@ -51,6 +62,9 @@ class PersonalInfo extends React.Component {
         const { username, oldPassword, newPassword, confirmPassword, previewImg } = this.state.user;
         var email = JSON.parse(localStorage.getItem('user')).user.email;
         var password = JSON.parse(localStorage.getItem('user')).user.password;
+        console.log("Email: ", email);
+        console.log("password: ", password);
+
         if (oldPassword) {
             if (oldPassword === password) {
                 if (newPassword && confirmPassword) {
@@ -60,22 +74,58 @@ class PersonalInfo extends React.Component {
                 }
             }
         }
+        console.log("NEW PASS:   ", newPassword);
+        console.log(isUndefined(newPassword))
         var proceed = true;
-        if (newPassword !== '') {
+        console.log(oldPassword);
+        console.log(JSON.parse(localStorage.getItem('user')).user.password)
+        console.log(newPassword === null)
+        if (!(newPassword === null || newPassword === '' || isUndefined(newPassword))) {
             proceed = oldPassword !== '' && oldPassword === JSON.parse(localStorage.getItem('user')).user.password && confirmPassword !== '' && confirmPassword === newPassword;
             console.log(oldPassword !== '');
             console.log(oldPassword === JSON.parse(localStorage.getItem('user')).user.password);
             console.log(confirmPassword === newPassword);
         }
         console.log("Proceed:    ", proceed);
-        console.log(email, username, password, previewImg);
         if (proceed) {
-            this.props.edit(email, username, password, previewImg);
-            console.log(localStorage.getItem('user'));
-            setTimeout(() => { window.location.reload(); }, 1000);
+            console.log("Is exist:   ", this.state.selectedFile !== null);
+            if (this.state.selectedFile !== null) {
+                const upload = storage.ref(`images/${this.state.selectedFile.name}`).put(this.state.selectedFile);
+                upload.on('state_changed',
+                    (snapshop) => {
+
+                    },
+                    (error) => {
+                        console.log(error);
+                    },
+                    () => {
+                        storage.ref('images').child(this.state.selectedFile.name).getDownloadURL().then
+                            (url => {
+                                console.log("DOWNLOAD LINK:              ", url);
+                                var newUrl = url;
+                                console.log("The new URL: ", newUrl);
+                                let doTask = async () => { await this.props.edit(email, username, password, newUrl, JSON.parse(localStorage.getItem('user')).token) };
+                                doTask();
+                                window.location.reload();
+                            });
+                    }
+                );
+            }
+            else {
+                // let doTask = async () => { await this.props.edit(email, username, password, previewImg, JSON.parse(localStorage.getItem('user')).token) };
+                // doTask();
+                this.props.edit(email, username, password, previewImg, JSON.parse(localStorage.getItem('user')).token);
+                setTimeout(() => {window.location.reload()}, 2000);
+            }
+            // this.props.edit(email, username, password, this.state.user.previewImg);
+            // var newUsername = JSON.parse(localStorage.getItem('user')).user.username;
+            // var newPreviewImg = JSON.parse(localStorage.getItem('user')).user.avatarUrl;
+            // setTimeout(console.log("after edit clicked: ", localStorage.getItem('user')), 2000);
+            // if (this.state.submitted === true)
+            //     this.setState({ user: { username: this.state.username, oldPassword: null, newPassword: null, confirmPassword: null, previewImg: newPreviewImg }, selectedFile: null, submitted: false });
+
         }
     }
-
     handleChange(e) {
         const { id, value } = e.target;
         const user = this.state.user;
@@ -84,23 +134,29 @@ class PersonalInfo extends React.Component {
                 ...user,
                 [id]: value
             },
-            changed: true,
         });
     }
 
     handleImgPreview(e) {
-        this.setState({
-            previewImg: URL.createObjectURL(e.target.files[0])
-        })
+        var username = this.state.user.username;
+        var oldPassword = this.state.user.oldPassword;
+        console.log("Why change: ", newPassword)
+        var newPassword = this.state.newPassword;
+        var confirmPassword = this.state.confirmPassword;
+        if (e.target.files[0]) {
+            const img = e.target.files[0];
+            this.setState({
+                user: { previewImg: URL.createObjectURL(img), username: username, oldPassword: oldPassword, newPassword: newPassword, confirmPassword: confirmPassword }, selectedFile: img, submitted: false
+            })
+        }
     }
 
     render() {
+        console.log("PREVIEW                           ", JSON.parse(localStorage.getItem('user')).user);
+        console.log("After render: ", this.state.user);
         const editting = this.props;
 
-        const { user, submitted, previewImg } = this.state;
-        const email = JSON.parse(localStorage.getItem('user')).user.email;
-        const curPsw = JSON.parse(localStorage.getItem('user')).user.password;
-
+        const { user, submitted, } = this.state;
         const emailBox = <FormGroup>
             <Label><b>Email</b></Label>
             <Input
@@ -121,7 +177,7 @@ class PersonalInfo extends React.Component {
             />
         </FormGroup>
 
-        const avatar = <img class="avatar" id="avatar" src={previewImg} alt="your image"></img>;
+        const avatar = <img class="avatar" id="avatar" src={this.state.user.previewImg} alt="your image"></img>;
 
         const oldPswBox = <FormGroup>
             <Label><b>Old password</b></Label>
@@ -192,15 +248,15 @@ class PersonalInfo extends React.Component {
                                         <Label><b>Change password</b></Label>
                                     </div>
                                     <div>{oldPswBox}</div>
-                                    {submitted && user.oldPassword !== JSON.parse(localStorage.getItem('user')).user.password && user.newPassword !== '' &&
-                                        <div className="help-block" class="notification-danger-text">Password does not match</div>}
+                                    {/* {submitted && user.oldPassword !== JSON.parse(localStorage.getItem('user')).user.password && user.newPassword !== '' &&
+                                        <div className="help-block" class="notification-danger-text">Password does not match</div>} */}
                                     {submitted && user.oldPassword === '' && user.newPassword !== '' && <div className="help-block" class="notification-danger-text">Please input your old password</div>} <br />
                                     <div>{newPswBox}</div>
                                     <div>{confPswBox}</div>
                                     {submitted && user.confirmPassword === '' && user.newPassword !== '' && <div className="help-block" class="notification-danger-text">Please confrim your new password</div>}
                                     {submitted && user.newPassword && user.confirmPassword && user.newPassword !== user.confirmPassword &&
                                         <div className="help-block" class="notification-danger-text">Password does not match</div>} <br />
-                                    <div class="center"><Badge color="danger">You will have to re-login after finished editting</Badge></div> <br />
+                                    <div class="center">{submitted && <Badge color="danger">Processing... Please wait!</Badge>}</div> <br />
                                     <div class="wrapper">
                                         <div id="loginBtnDiv">{saveBtn}</div>
                                         <div id="registerBtnDiv">

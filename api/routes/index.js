@@ -56,15 +56,30 @@ router.post('/user/login', async function (req, res, next) {
 
 /* PUT edit */
 router.put('/user/edit', async function (req, res, next) {
-  const { email, username, password } = req.body;
+  const { email, username, password, avatarUrl, token } = req.body;
   console.log(req.body);
   var user = await getUser({ email });
-  var newData = { email: email, username: username, password: password, avatar: user.avatarUrl };
-  var token = jwt.sign({ user: newData }, '1612175');
-  User.update(newData, { where: { email: req.body.email } }).then(updated => res.json({
-    updated, msg: 'Data updated'
-  }))
-  console.log(JSON.stringify(user));
-  return res.json({ user, token });
+  // return res.json(user);
+  var newData = { email: email, username: username, password: password, avatarUrl: avatarUrl };
+  user.update(newData).then((user) => { 
+    var payload = user;
+    var token = jwt.sign( { user: payload }, '1612175');
+    return res.json({ user, token}) ;
+  })
+  // User.update(newData, { where: { email: req.body.email } }).then(updated => {
+  //   var newUser = User.findOne({ where: { email: req.body.email } });
+  //   return res.json(
+  //     {
+  //       updated,
+  //       newUser,
+  //       msg: 'Data updated',
+  //       token,
+  //     }
+  //   )
+  // }
+  // )
+  // console.log(JSON.stringify(user));
+  // var newUser = await getUser({ email });
+  // return res.json({ newUser, token });
 })
 module.exports = router;

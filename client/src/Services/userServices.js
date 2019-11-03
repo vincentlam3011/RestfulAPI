@@ -28,9 +28,6 @@ function logout() {
 }
 
 function getAll(param) {
-    // let param;
-    // let user = localStorage.getItem('user');
-    // param = JSON.parse(user).token;
     const requestOptions = {
         method: 'GET',
         params: param
@@ -52,16 +49,17 @@ function register(user) {
     return fetch(`${apiUrl}/user/register`, requestOptions).then(handleResponse);
 }
 
-function edit(email, username, password, avatar) {
+function edit(email, username, password, avatarUrl, token) {
     const requestOptions = {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, username, password, avatar })
+        body: JSON.stringify({ email, username, password, avatarUrl, token })
     };
     console.log(requestOptions.body)
     return fetch(`${apiUrl}/user/edit`, requestOptions).then(handleResponse).then(user => {
         localStorage.removeItem('user');
         localStorage.setItem('user', JSON.stringify(user));
+        console.log("From service: " ,user);
         return user;
     });
 }
