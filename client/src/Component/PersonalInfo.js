@@ -5,6 +5,9 @@ import { Link } from 'react-router-dom';
 import { FormGroup, Label, Input, Card, CardTitle, Button, CardBody, CardHeader, Badge, Nav, NavItem, NavLink } from 'reactstrap';
 import { connect } from 'react-redux';
 import { userActions } from '../Action/userAction';
+// import * as $ from 'jquery';
+
+var $ = require('jquery');
 
 class PersonalInfo extends React.Component {
     componentDidUpdate() {
@@ -18,7 +21,7 @@ class PersonalInfo extends React.Component {
         this.props.getUser(param);
     }
     constructor(props) {
-        if (localStorage.getItem('user') === null) {
+        if (localStorage.getItem('user') === '') {
             window.location.replace('/user/login');
         }
         console.log(JSON.parse(localStorage.getItem('user')).user)
@@ -30,12 +33,14 @@ class PersonalInfo extends React.Component {
                 oldPassword: '',
                 newPassword: '',
                 confirmPassword: '',
+                previewImg: (JSON.parse(localStorage.getItem('user')).user.avatarUrl) ? JSON.parse(localStorage.getItem('user')).user.avatarUrl : '../logo192.png',
             },
             changed: false,
             submitted: false,
         }
         this.handleChange = this.handleChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
+        this.handleImgPreview = this.handleImgPreview.bind(this);
     }
 
     handleSubmit = (e) => {
@@ -43,7 +48,7 @@ class PersonalInfo extends React.Component {
 
         this.setState({ submitted: true });
         console.log(JSON.parse(localStorage.getItem('user')).user)
-        const { username, oldPassword, newPassword, confirmPassword } = this.state.user;
+        const { username, oldPassword, newPassword, confirmPassword, previewImg } = this.state.user;
         var email = JSON.parse(localStorage.getItem('user')).user.email;
         var password = JSON.parse(localStorage.getItem('user')).user.password;
         if (oldPassword) {
@@ -56,16 +61,16 @@ class PersonalInfo extends React.Component {
             }
         }
         var proceed = true;
-        if (newPassword !== null) {
-            proceed = oldPassword !== null && oldPassword === JSON.parse(localStorage.getItem('user')).user.password && confirmPassword !== null && confirmPassword === newPassword;
-            console.log(oldPassword !== null);
+        if (newPassword !== '') {
+            proceed = oldPassword !== '' && oldPassword === JSON.parse(localStorage.getItem('user')).user.password && confirmPassword !== '' && confirmPassword === newPassword;
+            console.log(oldPassword !== '');
             console.log(oldPassword === JSON.parse(localStorage.getItem('user')).user.password);
             console.log(confirmPassword === newPassword);
         }
         console.log("Proceed:    ", proceed);
-        console.log(email, username, password);
+        console.log(email, username, password, previewImg);
         if (proceed) {
-            this.props.edit(email, username, password);
+            this.props.edit(email, username, password, previewImg);
             console.log(localStorage.getItem('user'));
             setTimeout(() => { window.location.reload(); }, 1000);
         }
@@ -83,10 +88,16 @@ class PersonalInfo extends React.Component {
         });
     }
 
+    handleImgPreview(e) {
+        this.setState({
+            previewImg: URL.createObjectURL(e.target.files[0])
+        })
+    }
+
     render() {
         const editting = this.props;
 
-        const { user, submitted, } = this.state;
+        const { user, submitted, previewImg } = this.state;
         const email = JSON.parse(localStorage.getItem('user')).user.email;
         const curPsw = JSON.parse(localStorage.getItem('user')).user.password;
 
@@ -110,7 +121,7 @@ class PersonalInfo extends React.Component {
             />
         </FormGroup>
 
-        const avatar = <img class="avatar" src={(JSON.parse(localStorage.getItem('user')).user.avatarUrl) ? JSON.parse(localStorage.getItem('user')).user.avatarUrl : '../logo192.png'}></img>;
+        const avatar = <img class="avatar" id="avatar" src={previewImg} alt="your image"></img>;
 
         const oldPswBox = <FormGroup>
             <Label><b>Old password</b></Label>
@@ -144,6 +155,11 @@ class PersonalInfo extends React.Component {
 
         const saveBtn = <Button color="primary" id="saveBtn">Save changes</Button>
         const cancelBtn = <Button color="warning" id="cancelBtn">Cancel</Button>
+
+        const uploadBtn = <Button color="primary">
+            <input onChange={this.handleImgPreview} type='file' accept="image/*" id="imgInp" />
+        </Button>
+
         return (
             <div >
                 <div class="container">
@@ -168,19 +184,20 @@ class PersonalInfo extends React.Component {
                             <CardBody>
                                 <CardTitle className="text-center"><label class="title">Personalization</label></CardTitle>
                                 <div class="form">
-                                    <div class="center">{avatar}</div>
+                                    <div class="center">{avatar}</div><br />
+                                    <div class="center">{uploadBtn}</div><br />
                                     <div>{emailBox}</div>
                                     <div>{usernameBox}</div>
                                     <div class="center">
                                         <Label><b>Change password</b></Label>
                                     </div>
                                     <div>{oldPswBox}</div>
-                                    {submitted && user.oldPassword !== JSON.parse(localStorage.getItem('user')).user.password && user.newPassword !== null &&
+                                    {submitted && user.oldPassword !== JSON.parse(localStorage.getItem('user')).user.password && user.newPassword !== '' &&
                                         <div className="help-block" class="notification-danger-text">Password does not match</div>}
-                                    {submitted && user.oldPassword === null && user.newPassword !== null && <div className="help-block" class="notification-danger-text">Please input your old password</div>} <br />
+                                    {submitted && user.oldPassword === '' && user.newPassword !== '' && <div className="help-block" class="notification-danger-text">Please input your old password</div>} <br />
                                     <div>{newPswBox}</div>
                                     <div>{confPswBox}</div>
-                                    {submitted && user.confirmPassword === null && user.newPassword !== null && <div className="help-block" class="notification-danger-text">Please confrim your new password</div>}
+                                    {submitted && user.confirmPassword === '' && user.newPassword !== '' && <div className="help-block" class="notification-danger-text">Please confrim your new password</div>}
                                     {submitted && user.newPassword && user.confirmPassword && user.newPassword !== user.confirmPassword &&
                                         <div className="help-block" class="notification-danger-text">Password does not match</div>} <br />
                                     <div class="center"><Badge color="danger">You will have to re-login after finished editting</Badge></div> <br />

@@ -52,11 +52,11 @@ function register(user) {
     return fetch(`${apiUrl}/user/register`, requestOptions).then(handleResponse);
 }
 
-function edit(email, username, password) {
+function edit(email, username, password, avatar) {
     const requestOptions = {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, username, password })
+        body: JSON.stringify({ email, username, password, avatar })
     };
     console.log(requestOptions.body)
     return fetch(`${apiUrl}/user/edit`, requestOptions).then(handleResponse).then(user => {

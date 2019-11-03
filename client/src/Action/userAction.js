@@ -59,11 +59,11 @@ function register(user) {
     function failure(error) { return { type: userConstants.REGISTER_FAILURE, error } }
 }
 
-function edit(email, username, password) {
+function edit(email, username, password, avatar) {
     return dispatch => {
-        dispatch(request(email, username, password));
+        dispatch(request(email, username, password, avatar));
 
-        userService.edit(email, username, password)
+        userService.edit(email, username, password, avatar)
             .then(user => {
                 dispatch(success(user));
                 dispatch(alertActions.success('Edit successful'));
