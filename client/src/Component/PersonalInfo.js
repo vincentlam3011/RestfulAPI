@@ -26,7 +26,7 @@ class PersonalInfo extends React.Component {
         if (localStorage.getItem('user') === null) {
             window.location.replace('/user/login');
         }
-        console.log("Current local: ", JSON.parse(localStorage.getItem('user')))
+        console.log("Current local: ", JSON.stringify(localStorage.getItem('user')))
         console.log(JSON.parse(localStorage.getItem('user')).user.avatarUrl)
 
         super(props);
@@ -106,7 +106,7 @@ class PersonalInfo extends React.Component {
                                 console.log("The new URL: ", newUrl);
                                 let doTask = async () => { await this.props.edit(email, username, password, newUrl, JSON.parse(localStorage.getItem('user')).token) };
                                 doTask();
-                                window.location.reload();
+                                setTimeout(() => { window.location.reload() }, 3000);
                             });
                     }
                 );
@@ -115,7 +115,7 @@ class PersonalInfo extends React.Component {
                 // let doTask = async () => { await this.props.edit(email, username, password, previewImg, JSON.parse(localStorage.getItem('user')).token) };
                 // doTask();
                 this.props.edit(email, username, password, previewImg, JSON.parse(localStorage.getItem('user')).token);
-                setTimeout(() => {window.location.reload()}, 2000);
+                setTimeout(() => { window.location.reload() }, 2000);
             }
             // this.props.edit(email, username, password, this.state.user.previewImg);
             // var newUsername = JSON.parse(localStorage.getItem('user')).user.username;

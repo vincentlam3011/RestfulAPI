@@ -1,12 +1,21 @@
 const Sqlize = require('sequelize');
 const UserModel = require('./models/user');
 
+// const sqlize = new Sqlize({
+//     database: 'mydb',
+//     username: 'root',
+//     password: '30111998',
+//     dialect: 'mysql'
+// });
+
 const sqlize = new Sqlize({
-    database: 'mydb',
-    username: 'root',
-    password: '30111998',
-    dialect: 'mysql'
-});
+    username: 'PitUo9ZDJo',
+    password: 'L84E6CUqJd',
+    database: 'PitUo9ZDJo',
+    port: '3306',
+    host: 'remotemysql.com',
+    dialect: 'mysql',
+})
 
 sqlize
     .authenticate()
