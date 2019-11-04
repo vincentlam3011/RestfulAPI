@@ -55,7 +55,7 @@ function register(user) {
 
     function request(user) { return { type: userConstants.REGISTER_REQUEST, user } }
     function success(user) { window.location.replace('/user/login'); return { type: userConstants.REGISTER_SUCCESS, user } }
-    function failure(error) { alert("Account existed"); return { type: userConstants.REGISTER_FAILURE, error } }
+    function failure(error) { return { type: userConstants.REGISTER_FAILURE, error } }
 }
 
 function edit(email, username, password, avatarUrl, token) {
