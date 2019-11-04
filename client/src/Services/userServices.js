@@ -6,7 +6,8 @@ export const userService = {
     edit,
 };
 
-const apiUrl = 'http://localhost:8080'
+// const apiUrl = 'http://localhost:8080'
+const apiUrl = 'https://midterm-backend-host.herokuapp.com';
 
 function login(email, password) {
     const requestOptions = {
